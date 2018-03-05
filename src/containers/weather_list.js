@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { deleteCity } from '../actions/index';
 import Chart from '../components/chart';
 import GoogleMap from '../components/google_map';
 
@@ -13,24 +14,30 @@ class WeatherList extends Component {
     const { lon, lat } = cityData.city.coord;
 
     return (
-      <tr key={name}>
+      <tr key={name}>        
         <td><GoogleMap lat={lat} lon={lon}/></td>
         <td><Chart data={temps} color="orange" units="°C"/></td>
         <td><Chart data={pressures} color="green" units="hPa"/></td>
         <td><Chart data={humidities} color="black" units="%"/></td>
+        <td><button className="action" onClick={()=>this.removeCity(name)}>X</button></td>
       </tr>
     );
+  }
+
+  removeCity = (city) => {
+    this.props.remove(city);
   }
 
   render() {
     return (
       <table className="table table-hover">
         <thead>
-          <tr>
+          <tr>            
             <th>City</th>
             <th>Temperature (°C)</th>
             <th>Pressure (hPa)</th>
             <th>Humidity (%)</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -45,4 +52,10 @@ const mapStateToProps = (state) => {
   return { weather: state.weather }
 }
 
-export default connect(mapStateToProps)(WeatherList);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    remove: (id)=>dispatch(deleteCity(id))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeatherList);
